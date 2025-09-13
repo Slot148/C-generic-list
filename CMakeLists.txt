@@ -7,7 +7,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 add_library(Tlist src/lib/Tlist/Tlist.c src/lib/test.c)
 target_compile_options(Tlist PRIVATE -Wall -Wextra -Wpedantic -Werror)
-target_include_directories(Tlist PUBLIC headers)
+target_include_directories(Tlist PUBLIC include)
 
 add_executable(meu_programa src/main.c)
 target_link_libraries(meu_programa PRIVATE Tlist)
