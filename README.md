@@ -1,10 +1,8 @@
 # C Generic List
 
 Uma implementação de uma lista ligada genérica e de tipagem dinâmica em C, utilizando um estilo de programação orientado a objetos com ponteiros de função.
-Uma implementação de uma lista encadeada genérica e de tipagem dinâmica em C, utilizando um estilo de programação orientado a objetos com ponteiros de função.
 
 Esta biblioteca fornece uma estrutura de lista flexível que pode armazenar diferentes tipos de dados, incluindo inteiros, strings, floats, doubles e ponteiros genéricos (`void*`), cuidando da alocação e cópia de memória quando necessário.
-Esta biblioteca fornece uma estrutura de lista flexível que pode armazenar diferentes tipos de dados, incluindo inteiros, strings, floats, doubles e ponteiros genéricos (`void*`), cuidando da alocação e cópia de memória de forma segura.
 
 ## ✨ Funcionalidades
 
