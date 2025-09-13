@@ -1,10 +1,13 @@
 # C Generic List
 
 Uma implementação de uma lista ligada genérica e de tipagem dinâmica em C, utilizando um estilo de programação orientado a objetos com ponteiros de função.
+Uma implementação de uma lista encadeada genérica e de tipagem dinâmica em C, utilizando um estilo de programação orientado a objetos com ponteiros de função.
 
 Esta biblioteca fornece uma estrutura de lista flexível que pode armazenar diferentes tipos de dados, incluindo inteiros, strings, floats, doubles e ponteiros genéricos (`void*`), cuidando da alocação e cópia de memória quando necessário.
+Esta biblioteca fornece uma estrutura de lista flexível que pode armazenar diferentes tipos de dados, incluindo inteiros, strings, floats, doubles e ponteiros genéricos (`void*`), cuidando da alocação e cópia de memória de forma segura.
 
 ## ✨ Funcionalidades
+## ✨ Recursos
 
 - **Tipagem Dinâmica**: Crie listas para armazenar `int`, `float`, `double`, `char*` (strings) ou ponteiros genéricos (`void*`).
 - **Interface Orientada a Objetos**: Interaja com a lista usando "métodos" através de ponteiros de função (ex: `minhaLista->push(...)`).
@@ -19,6 +22,7 @@ Esta biblioteca fornece uma estrutura de lista flexível que pode armazenar dife
   - `set`: Atualiza o valor em um índice.
   - `len`: Retorna o número de elementos.
   - `foreach`: Itera sobre a lista e aplica uma função a cada elemento.
+  - `foreach`: Itera sobre a lista e aplica uma função de callback a cada elemento.
   - `print`: Imprime o conteúdo da lista (para tipos básicos).
   - `free`: Libera toda a memória alocada pelos nós da lista.
 
@@ -80,6 +84,7 @@ int main() {
 
     // Imprime a lista
     intList->print(intList); // Saída: [ 10, 20, 30 ]
+    intList->print(intList); // Saída esperada: [ 10, 20, 30 ]
 
     // Libera a memória da lista
     intList->free(intList);
@@ -137,3 +142,23 @@ A documentação completa da API pode ser gerada usando **Doxygen**.
     doxygen Doxyfile
     ```
 3.  Abra o arquivo `docs/html/index.html` em seu navegador para visualizar a documentação.
+
+## 🤝 Como Contribuir
+
+Contribuições são sempre bem-vindas! Se você encontrar um bug, tiver uma sugestão de melhoria ou quiser adicionar uma nova funcionalidade, sinta-se à vontade para:
+
+1.  Fazer um "fork" do projeto.
+2.  Criar uma nova "branch" (`git checkout -b feature/nova-feature`).
+3.  Fazer o "commit" de suas alterações (`git commit -m 'feat: Adiciona nova feature'`).
+4.  Fazer o "push" para a "branch" (`git push origin feature/nova-feature`).
+5.  Abrir um "Pull Request".
+
+## 📜 Licença
+
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+---
+
+Feito por **Slot148**. Entre em contato!
+
+[LinkedIn](https://www.linkedin.com/in/nicolas-anderson-34b082302/) | [GitHub](https://github.com/Slot148)
