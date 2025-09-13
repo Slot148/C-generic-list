@@ -20,7 +20,6 @@ Esta biblioteca fornece uma estrutura de lista flexível que pode armazenar dife
   - `get`: Obtém um ponteiro para o elemento em um índice.
   - `set`: Atualiza o valor em um índice.
   - `len`: Retorna o número de elementos.
-  - `foreach`: Itera sobre a lista e aplica uma função a cada elemento.
   - `foreach`: Itera sobre a lista e aplica uma função de callback a cada elemento.
   - `print`: Imprime o conteúdo da lista (para tipos básicos).
   - `free`: Libera toda a memória alocada pelos nós da lista.
