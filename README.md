@@ -7,7 +7,6 @@ Esta biblioteca fornece uma estrutura de lista flexível que pode armazenar dife
 Esta biblioteca fornece uma estrutura de lista flexível que pode armazenar diferentes tipos de dados, incluindo inteiros, strings, floats, doubles e ponteiros genéricos (`void*`), cuidando da alocação e cópia de memória de forma segura.
 
 ## ✨ Funcionalidades
-## ✨ Recursos
 
 - **Tipagem Dinâmica**: Crie listas para armazenar `int`, `float`, `double`, `char*` (strings) ou ponteiros genéricos (`void*`).
 - **Interface Orientada a Objetos**: Interaja com a lista usando "métodos" através de ponteiros de função (ex: `minhaLista->push(...)`).
@@ -21,7 +20,6 @@ Esta biblioteca fornece uma estrutura de lista flexível que pode armazenar dife
   - `get`: Obtém um ponteiro para o elemento em um índice.
   - `set`: Atualiza o valor em um índice.
   - `len`: Retorna o número de elementos.
-  - `foreach`: Itera sobre a lista e aplica uma função a cada elemento.
   - `foreach`: Itera sobre a lista e aplica uma função de callback a cada elemento.
   - `print`: Imprime o conteúdo da lista (para tipos básicos).
   - `free`: Libera toda a memória alocada pelos nós da lista.
