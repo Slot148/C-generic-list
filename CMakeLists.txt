@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-add_library(Tlist src/lib/Tlist/Tlist.c)
+add_library(Tlist src/lib/Tlist/Tlist.c src/lib/test.c)
 target_compile_options(Tlist PRIVATE -Wall -Wextra -Wpedantic -Werror)
 target_include_directories(Tlist PUBLIC headers)
 

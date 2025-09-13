@@ -76,4 +76,14 @@ struct Lista{
  */
 List newList(Type type);
 
+/**
+ * @brief Runs a series of tests on the list implementation.
+ *
+ * This function is intended for development and debugging purposes. It creates
+ * lists of various types, performs a sequence of operations (like push, pop, get, set, etc.),
+ * and prints the results to demonstrate the functionality and help verify correctness.
+ */
+void test();
+
+
 #endif

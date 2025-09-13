@@ -1,26 +1,26 @@
 /**
- * @mainpage Tlist - Uma Biblioteca de Lista Ligada Genérica em C
+ * @mainpage Tlist - A Generic Singly Linked List Library in C
  *
- * @section intro_sec Introdução
+ * @section intro_sec Introduction
  *
- * Tlist é uma implementação de lista simplesmente ligada em C, projetada para ser
- * flexível e segura em tipos. Ela utiliza uma abordagem orientada a objetos em C,
- * onde a estrutura da lista contém ponteiros para suas próprias funções (métodos).
+ * Tlist is a simple singly linked list implementation in C, designed to be
+ * type-flexible and type-safe. It uses an object-oriented approach in C,
+ * where the list structure contains pointers to its own functions (methods).
  *
- * A lista pode ser configurada no momento da criação para armazenar diferentes tipos de dados,
- * gerenciando a memória de forma apropriada para cada um.
+ * The list can be configured at creation time to store different data types,
+ * managing memory appropriately for each type.
  *
- * @section features_sec Funcionalidades
- * - **Tipos de Dados Suportados:**
- *   - `INT`: Armazena cópias de valores inteiros.
- *   - `FLOAT`: Armazena cópias de valores de ponto flutuante.
- *   - `DOUBLE`: Armazena cópias de valores de ponto flutuante de precisão dupla.
- *   - `STRING`: Armazena cópias de strings C (char*).
- *   - `T`: Armazena ponteiros genéricos (`void*`), deixando o gerenciamento da memória do dado para o usuário.
- * - **Interface Orientada a Objetos:** Interaja com a lista através de seus métodos, como `list->push(list, data)`.
- * - **Gerenciamento de Memória:** A biblioteca gerencia a alocação e liberação de memória para os tipos primitivos e strings.
+ * @section features_sec Features
+ * - **Supported Data Types:**
+ *   - `INT`: Stores copies of integer values.
+ *   - `FLOAT`: Stores copies of floating-point values.
+ *   - `DOUBLE`: Stores copies of double-precision floating-point values.
+ *   - `STRING`: Stores copies of C strings (char*).
+ *   - `T`: Stores generic pointers (`void*`), leaving memory management of the data to the user.
+ * - **Object-Oriented Interface:** Interact with the list through its methods, such as `list->push(list, data)`.
+ * - **Memory Management:** The library manages memory allocation and deallocation for primitive types and strings.
  *
- * @section usage_sec Exemplo de Uso
+ * @section usage_sec Usage Example
  *
  * ```c
  * #include "Tlist.h"
@@ -28,19 +28,19 @@
  * #include <stdlib.h>
  *
  * int main() {
- *     // Cria uma nova lista para armazenar inteiros
+ *     // Creates a new list to store integers
  *     List l = newList(INT);
  *
- *     // Adiciona elementos
+ *     // Adds elements
  *     l->push(l, 10);
  *     l->push(l, 20);
  *
- *     // Imprime a lista
- *     l->print(l); // Saída: [10, 20]
+ *     // Prints the list
+ *     l->print(l); // Output: [10, 20]
  *
- *     // Libera os nós da lista
+ *     // Frees the list nodes
  *     l->free(l);
- *     // Libera a estrutura da lista
+ *     // Frees the list structure
  *     free(l);
  *
  *     return 0;
