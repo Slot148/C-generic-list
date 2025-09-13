@@ -1,10 +1,54 @@
 /**
+ * @mainpage Tlist - Uma Biblioteca de Lista Ligada Genérica em C
+ *
+ * @section intro_sec Introdução
+ *
+ * Tlist é uma implementação de lista simplesmente ligada em C, projetada para ser
+ * flexível e segura em tipos. Ela utiliza uma abordagem orientada a objetos em C,
+ * onde a estrutura da lista contém ponteiros para suas próprias funções (métodos).
+ *
+ * A lista pode ser configurada no momento da criação para armazenar diferentes tipos de dados,
+ * gerenciando a memória de forma apropriada para cada um.
+ *
+ * @section features_sec Funcionalidades
+ * - **Tipos de Dados Suportados:**
+ *   - `INT`: Armazena cópias de valores inteiros.
+ *   - `FLOAT`: Armazena cópias de valores de ponto flutuante.
+ *   - `DOUBLE`: Armazena cópias de valores de ponto flutuante de precisão dupla.
+ *   - `STRING`: Armazena cópias de strings C (char*).
+ *   - `T`: Armazena ponteiros genéricos (`void*`), deixando o gerenciamento da memória do dado para o usuário.
+ * - **Interface Orientada a Objetos:** Interaja com a lista através de seus métodos, como `list->push(list, data)`.
+ * - **Gerenciamento de Memória:** A biblioteca gerencia a alocação e liberação de memória para os tipos primitivos e strings.
+ *
+ * @section usage_sec Exemplo de Uso
+ *
+ * ```c
+ * #include "Tlist.h"
+ * #include <stdio.h>
+ * #include <stdlib.h>
+ *
+ * int main() {
+ *     // Cria uma nova lista para armazenar inteiros
+ *     List l = newList(INT);
+ *
+ *     // Adiciona elementos
+ *     l->push(l, 10);
+ *     l->push(l, 20);
+ *
+ *     // Imprime a lista
+ *     l->print(l); // Saída: [10, 20]
+ *
+ *     // Libera os nós da lista
+ *     l->free(l);
+ *     // Libera a estrutura da lista
+ *     free(l);
+ *
+ *     return 0;
+ * }
+ * ```
+ *
  * @file Tlist.c
  * @brief Implementation of a generic, type-aware singly linked list in C.
- *
- * This module provides a generic list capable of storing elements of different
- * types (int, float, double, C-strings, or generic pointers) determined at
- * list creation time.
  *
  * For primitive types (INT, FLOAT, DOUBLE) and STRING, the list manages memory
  * internally by copying values. For the generic pointer type (T), the list
