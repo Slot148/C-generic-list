@@ -1,7 +1,9 @@
+docs
 docs/*
-.vscode/*
-build/*
-test/*
+build
+buil/*
 lib
 lib/*
+test
+test/*
 */
