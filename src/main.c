@@ -171,9 +171,7 @@ void testPessoa() {
 }
 
 int main() {
-    setlocale(LC_ALL, "");
     printf("Starting tests...\n");
-    prinf("á, é, í, ó, ú, ç, ã, ẽ, ĩ, ç");
     testInts();
     testStrings();
     testFloats();

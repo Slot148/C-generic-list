@@ -1,11 +1,15 @@
 /**
  * @file Tlist.c
- * @brief Implementation of a generic singly linked list in C.
+ * @brief Implementation of a generic, type-aware singly linked list in C.
  *
  * This module provides a generic list capable of storing elements of different
  * types (int, float, double, C-strings, or generic pointers) determined at
- * list creation time. The list stores values by value for numeric types and
- * duplicates C-strings. See function documentation for ownership semantics.
+ * list creation time.
+ *
+ * For primitive types (INT, FLOAT, DOUBLE) and STRING, the list manages memory
+ * internally by copying values. For the generic pointer type (T), the list
+ * only stores the pointer itself, and the caller is responsible for managing
+ * the memory of the pointed-to data.
  */
 
 #include "Tlist.h"
@@ -14,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+/** @copydoc newList */
 List newList(Type type){
     List this = (List)malloc(sizeof(struct Lista));
     this->head = NULL;
@@ -53,6 +58,19 @@ List newList(Type type){
     return this;
 }
 
+/**
+ * @brief Creates a new list node and allocates memory for its value.
+ *
+ * For `INT`, `FLOAT`, and `DOUBLE`, it allocates `size` bytes and copies the value.
+ * For `STRING`, it allocates memory for a new string and copies the content.
+ * For `T`, it does not allocate memory for the value but stores the pointer `val` directly.
+ *
+ * @param val A pointer to the value to be stored in the node.
+ * @param size The size of the data type (for value types).
+ * @param type The `Type` of the data.
+ * @return A pointer to the newly created `Node`.
+ * @private
+ */
 Node newNode(void *val, size_t size, Type type){
     Node node = (Node)malloc(sizeof(struct Node));    
     if (type == STRING) {
@@ -70,6 +88,11 @@ Node newNode(void *val, size_t size, Type type){
     return node;
 }
 
+/**
+ * @brief Prints the contents of the list to standard output.
+ * @param this A pointer to the list.
+ * @private
+ */
 void print(List this){
     printf("[");
     for (Node current = this->head; current != NULL; current = current->nextNode){
@@ -98,6 +121,16 @@ void print(List this){
     printf("\n");
 }
 
+/**
+ * @brief Frees all the nodes in the list and the data they contain.
+ *
+ * It iterates through the list, freeing each node. For all types except `T`,
+ * it also frees the memory allocated for the node's value (`val`). For type `T`,
+ * it is the caller's responsibility to free the pointed-to data before or after
+ * calling this function (e.g., using `foreach`). This function does NOT free
+ * the `List` struct itself.
+ * @param this A pointer to the list.
+ */
 void destroyList(List this){
     Node current = this->head;
     while (current != NULL){
@@ -109,6 +142,12 @@ void destroyList(List this){
     this->head = NULL;
 }
 
+/**
+ * @brief Helper function to add a node to the end of the list.
+ * @param this A pointer to the list.
+ * @param node The node to be added.
+ * @private
+ */
 void underPush(List this, Node node){
     if (this->head == NULL){
         this->head = node;
@@ -122,6 +161,17 @@ void underPush(List this, Node node){
     }
 }
 
+/**
+ * @brief Adds a new element to the end of the list.
+ *
+ * This is a variadic function. The type of the argument after `this` must
+ * match the list's `Type`.
+ * - For `INT`: `int`
+ * - For `FLOAT`, `DOUBLE`: `double` (due to default argument promotion)
+ * - For `STRING`: `char*`
+ * - For `T`: `void*`
+ * @param this A pointer to the list.
+ */
 void push(List this, ...){
     va_list args;
     va_start(args, this);
@@ -155,6 +205,11 @@ void push(List this, ...){
     va_end(args);
 }
 
+/**
+ * @brief Calculates and returns the number of elements in the list.
+ * @param this A pointer to the list.
+ * @return The number of elements.
+ */
 int len(List this){
     int len = 0;
     for (Node current = this->head; current != NULL; current = current->nextNode){
@@ -163,6 +218,16 @@ int len(List this){
     return len;
 }
 
+/**
+ * @brief Removes the first element (head) of the list and returns its value.
+ *
+ * The caller takes ownership of the returned pointer and is responsible for
+ * freeing it. For type `T`, the returned pointer is the one that was originally
+ * inserted. For other types, it's a pointer to a heap-allocated copy.
+ *
+ * @param this A pointer to the list.
+ * @return A pointer to the value of the removed element, or `NULL` if the list is empty.
+ */
 void *pop(List this){
     if (this->head == NULL){
         return NULL;
@@ -175,6 +240,20 @@ void *pop(List this){
     }
 }
 
+/**
+ * @brief Retrieves a pointer to the element at a specific index.
+ *
+ * This function provides direct but read-only access to the internal data.
+ * The returned pointer is owned by the list and should not be freed by the caller.
+ * Its validity is only guaranteed until the next list-modifying operation.
+ * For `INT`, `FLOAT`, `DOUBLE`, this will be a pointer to the heap-allocated value.
+ * For `STRING`, a pointer to the internal string copy.
+ * For `T`, the original `void*` that was inserted.
+ *
+ * @param this A pointer to the list.
+ * @param index The zero-based index of the element to retrieve.
+ * @return A pointer to the element's value, or `NULL` if the index is out of bounds.
+ */
 void *get(List this, int index){
     int x = 0;
     Node current = this->head;
@@ -188,6 +267,16 @@ void *get(List this, int index){
     return NULL;
 }
 
+/**
+ * @brief Updates the value of an element at a specific index.
+ *
+ * This is a variadic function. The argument after `index` must match the list's `Type`.
+ * For `STRING`, the old string is freed and a new one is allocated and copied.
+ * For `T`, the pointer is simply replaced.
+ *
+ * @param this A pointer to the list.
+ * @param index The zero-based index of the element to update.
+ */
 void set(List this, int index, ...){
     va_list args;
     va_start(args, index);
@@ -230,6 +319,14 @@ void set(List this, int index, ...){
     va_end(args);
 }
 
+/**
+ * @brief Deletes the element at a specific index.
+ *
+ * This function removes the node and frees the associated memory for its value
+ * (unless the list type is `T`).
+ * @param this A pointer to the list.
+ * @param index The zero-based index of the element to delete.
+ */
 void delete(List this, int index){
     if (index == 0) {
         void* v = this->pop(this);
@@ -250,6 +347,13 @@ void delete(List this, int index){
     }
 }
 
+/**
+ * @brief Helper function to insert a node at a specific index.
+ * @param this A pointer to the list.
+ * @param index The zero-based index where the node should be inserted.
+ * @param node The node to insert.
+ * @private
+ */
 void underInsert(List this, int index, Node node){
     Node current = this->head;
     int x = 0;
@@ -269,6 +373,13 @@ void underInsert(List this, int index, Node node){
     }
 }
 
+/**
+ * @brief Inserts a new element at a specific index.
+ *
+ * This is a variadic function. The argument after `index` must match the list's `Type`.
+ * @param this A pointer to the list.
+ * @param index The zero-based index at which to insert the new element.
+ */
 void insert(List this, int index, ...){
     va_list args;
     va_start(args, index);
@@ -304,6 +415,17 @@ void insert(List this, int index, ...){
     va_end(args);
 }
 
+/**
+ * @brief Removes and returns the element at a specific index.
+ *
+ * The caller takes ownership of the returned pointer and is responsible for
+ * freeing it. For type `T`, the returned pointer is the one that was originally
+ * inserted. For other types, it's a pointer to a heap-allocated copy.
+ *
+ * @param this A pointer to the list.
+ * @param index The zero-based index of the element to remove.
+ * @return A pointer to the value of the removed element, or `NULL` if the index is out of bounds.
+ */
 void *pick(List this, int index){
     if(index == 0){
         return this->pop(this);
@@ -327,6 +449,12 @@ void *pick(List this, int index){
     return NULL;
 }
 
+/**
+ * @brief Applies a given function to each element in the list.
+ *
+ * @param this A pointer to the list.
+ * @param function A function pointer that takes a `void*` (the element's data) and returns `void`.
+ */
 void foreach(List this, void(*function)(void*)){
     for(Node current = this->head; current != NULL; current = current->nextNode){
         function(current->val);
