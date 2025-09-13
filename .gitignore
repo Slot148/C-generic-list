@@ -2,4 +2,6 @@ docs/*
 .vscode/*
 build/*
 test/*
+lib
+lib/*
 */
