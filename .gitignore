@@ -1,9 +1,12 @@
 docs
 docs/*
 build
-buil/*
+build/*
 lib
 lib/*
 test
+test/
 test/*
+.vscode/
+.vscode/*
 */
