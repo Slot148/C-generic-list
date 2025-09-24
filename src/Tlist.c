@@ -58,15 +58,17 @@
 
 #include "Tlist.h"
 #include "TlistPrivate.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 
 /** @copydoc newList */
 List newList(Type type){
     List this = (List)malloc(sizeof(struct Lista));
-    this->head = NULL;
-    this->type = type;
+    if(this == NULL) {
+        fprintf(stderr, "Error in newList(): Failed to allocate memory for the new list.\n");
+        exit(EXIT_FAILURE);
+    }
+    this->_head = NULL;
+    this->_type = type;
 
     // list methods
     this->print = print;
@@ -83,19 +85,19 @@ List newList(Type type){
 
     switch(type){
         case INT:
-            this->size = sizeof(int);
+            this->_size = sizeof(int);
             break;
         case STRING:
-            this->size = sizeof(char *);
+            this->_size = sizeof(char *);
             break;
         case DOUBLE:
-            this->size = sizeof(double);
+            this->_size = sizeof(double);
             break;
         case FLOAT:
-            this->size = sizeof(float);
+            this->_size = sizeof(float);
             break;
         case T:
-            this->size = sizeof(void *);
+            this->_size = sizeof(void *);
             break;
     }
 
@@ -117,18 +119,34 @@ List newList(Type type){
  */
 Node newNode(void *val, size_t size, Type type){
     Node node = (Node)malloc(sizeof(struct Node));    
+    if(node == NULL) {
+        fprintf(stderr, "Error in newNode(): Failed to allocate memory for a new node.\n");
+        exit(EXIT_FAILURE);
+    }
     if (type == STRING) {
-        node->val = malloc(strlen((char *)val) + 1);
-        strcpy((char *)node->val, (char *)val);
+        if (val == NULL) {
+            fprintf(stderr, "Error in newNode(): Cannot create a STRING node from a NULL pointer.\n");
+            exit(EXIT_FAILURE);
+        }
+        node->_val = malloc(strlen((char *)val) + 1);
+        if (node->_val == NULL) {
+            fprintf(stderr, "Error in newNode(): Failed to allocate memory for the node's string value.\n");
+            exit(EXIT_FAILURE);
+        }
+        strcpy((char *)node->_val, (char *)val);
     }
     else if (type == T) {
-        node->val = val;
+        node->_val = val;
     }
     else {
-        node->val = malloc(size);
-        memcpy(node->val, val, size);
+        node->_val = malloc(size);
+        if (node->_val == NULL) {
+            fprintf(stderr, "Error in newNode(): Failed to allocate memory for the node's value.\n");
+            exit(EXIT_FAILURE);
+        }
+        memcpy(node->_val, val, size);
     }   
-    node->nextNode = NULL;
+    node->_nextNode = NULL;
     return node;
 }
 
@@ -138,26 +156,30 @@ Node newNode(void *val, size_t size, Type type){
  * @private
  */
 void print(List this){
+    if (this == NULL) {
+        fprintf(stderr, "Error in print(): The provided list instance is NULL.\n");
+        return;
+    }
     printf("[");
-    for (Node current = this->head; current != NULL; current = current->nextNode){
-        switch (this->type){
+    for (Node current = this->_head; current != NULL; current = current->_nextNode){
+        switch (this->_type){
             case INT:
-                printf("%d", *(int *)current->val);
+                printf("%d", *(int *)current->_val);
                 break;
             case STRING:
-                printf("\"%s\"", (char *)current->val);
+                printf("\"%s\"", (char *)current->_val);
                 break;
             case DOUBLE:
-                printf("%.2f", *(double *)current->val);
+                printf("%.2f", *(double *)current->_val);
                 break;
             case FLOAT:
-                printf("%.2f", *(float *)current->val);
+                printf("%.2f", *(float *)current->_val);
                 break;
             case T:
-                printf("%p", current->val);
+                printf("%p", current->_val);
                 break;
         }
-        if (current->nextNode != NULL){
+        if (current->_nextNode != NULL){
             printf(", ");
         }
     }
@@ -176,14 +198,18 @@ void print(List this){
  * @param this A pointer to the list.
  */
 void destroyList(List this){
-    Node current = this->head;
+    if (this == NULL) {
+        fprintf(stderr, "Error in destroyList(): The provided list instance is NULL.\n");
+        return;
+    }
+    Node current = this->_head;
     while (current != NULL){
         Node temp = current;
-        current = temp->nextNode;
-        if(this->type != T) free(temp->val);
+        current = temp->_nextNode;
+        if(this->_type != T) free(temp->_val);
         free(temp);
     }
-    this->head = NULL;
+    this->_head = NULL;
 }
 
 /**
@@ -193,15 +219,15 @@ void destroyList(List this){
  * @private
  */
 void underPush(List this, Node node){
-    if (this->head == NULL){
-        this->head = node;
+    if (this->_head == NULL){
+        this->_head = node;
     }
     else{
-        Node current = this->head;
-        while (current->nextNode != NULL){
-            current = current->nextNode;
+        Node current = this->_head;
+        while (current->_nextNode != NULL){
+            current = current->_nextNode;
         }
-        current->nextNode = node;
+        current->_nextNode = node;
     }
 }
 
@@ -217,32 +243,36 @@ void underPush(List this, Node node){
  * @param this A pointer to the list.
  */
 void push(List this, ...){
+    if (this == NULL) {
+        fprintf(stderr, "Error in push(): The provided list instance is NULL.\n");
+        return;
+    }
     va_list args;
     va_start(args, this);
-    switch (this->type){
+    switch (this->_type){
         case INT:{
             int val = va_arg(args, int);
-            underPush(this, newNode(&val, this->size, this->type));
+            underPush(this, newNode(&val, this->_size, this->_type));
             break;
         }
         case STRING:{
             char *str = va_arg(args, char *);
-            underPush(this, newNode(str, this->size, this->type));
+            underPush(this, newNode(str, this->_size, this->_type));
             break;
         }
         case DOUBLE:{
             double dbl = va_arg(args, double);
-            underPush(this, newNode(&dbl, this->size, this->type));
+            underPush(this, newNode(&dbl, this->_size, this->_type));
             break;
         }
         case FLOAT:{
             float flt = (float)va_arg(args, double);
-            underPush(this, newNode(&flt, this->size, this->type));
+            underPush(this, newNode(&flt, this->_size, this->_type));
             break;
         }
         default:{
             void *unkown = va_arg(args, void *);
-            underPush(this, newNode(unkown, this->size, this->type));
+            underPush(this, newNode(unkown, this->_size, this->_type));
             break;
         }
     }
@@ -255,8 +285,12 @@ void push(List this, ...){
  * @return The number of elements.
  */
 int len(List this){
+    if (this == NULL) {
+        fprintf(stderr, "Error in len(): The provided list instance is NULL.\n");
+        return 0;
+    }
     int len = 0;
-    for (Node current = this->head; current != NULL; current = current->nextNode){
+    for (Node current = this->_head; current != NULL; current = current->_nextNode){
         len++;
     }
     return len;
@@ -273,12 +307,16 @@ int len(List this){
  * @return A pointer to the value of the removed element, or `NULL` if the list is empty.
  */
 void *pop(List this){
-    if (this->head == NULL){
+    if (this == NULL) {
+        fprintf(stderr, "Error in pop(): The provided list instance is NULL.\n");
+        return NULL;
+    }
+    if (this->_head == NULL){
         return NULL;
     }else {
-        Node current = this->head;
-        this->head = current->nextNode;
-        void *val = current->val;
+        Node current = this->_head;
+        this->_head = current->_nextNode;
+        void *val = current->_val;
         free(current);
         return val;
     }
@@ -299,15 +337,24 @@ void *pop(List this){
  * @return A pointer to the element's value, or `NULL` if the index is out of bounds.
  */
 void *get(List this, int index){
+    if (this == NULL) {
+        fprintf(stderr, "Error in get(): The provided list instance is NULL.\n");
+        return NULL;
+    }
+    if (index < 0) {
+        fprintf(stderr, "Error in get(): Index %d is negative and invalid.\n", index);
+        return NULL;
+    }
     int x = 0;
-    Node current = this->head;
+    Node current = this->_head;
     while (current != NULL){
         if (x == index){
-            return current->val;
+            return current->_val;
         }
-        current = current->nextNode;
+        current = current->_nextNode;
         x++;
-    } 
+    }
+    fprintf(stderr, "Error in get(): Index %d is out of bounds for list of size %d.\n", index, x);
     return NULL;
 }
 
@@ -322,44 +369,61 @@ void *get(List this, int index){
  * @param index The zero-based index of the element to update.
  */
 void set(List this, int index, ...){
+    if (this == NULL) {
+        fprintf(stderr, "Error in set(): The provided list instance is NULL.\n");
+        return;
+    }
+    if (index < 0) {
+        fprintf(stderr, "Error in set(): Index %d is negative and invalid.\n", index);
+        return;
+    }
+
     va_list args;
     va_start(args, index);
-    Node current = this->head;
+    Node current = this->_head;
     int x = 0;
     while (current != NULL){
-        if (x == index)
-            switch (this->type){
+        if (x == index) {
+            switch (this->_type){
                 case INT:{
                     int val = va_arg(args, int);
-                    memcpy(current->val, &val, this->size);
+                    memcpy(current->_val, &val, this->_size);
                     break;
                 }
                 case FLOAT:{
                     float flt = (float)va_arg(args, double);
-                    memcpy(current->val, &flt, this->size);
+                    memcpy(current->_val, &flt, this->_size);
                     break;
                 }
                 case DOUBLE:{
                     double dbl = va_arg(args, double);
-                    memcpy(current->val, &dbl, this->size);
+                    memcpy(current->_val, &dbl, this->_size);
                     break;
                 }
                 case STRING:{
                     char *chr = va_arg(args, char *);
-                    free(current->val);
-                    current->val = malloc(strlen(chr) + 1);
-                    strcpy((char *)current->val, chr);
+                    free(current->_val);
+                    current->_val = malloc(strlen(chr) + 1);
+                    if (current->_val == NULL) {
+                        fprintf(stderr, "Error in set(): Failed to allocate memory for the new string value.\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    strcpy((char *)current->_val, chr);
                     break;
                 }
                 case T:{
                     void *nil = va_arg(args, void *);
-                    current->val = nil;
+                    current->_val = nil;
                     break;
                 }
             }
-        current = current->nextNode;
+            va_end(args);
+            return; // Value set, exit function
+        }
+        current = current->_nextNode;
         x++;
     }
+    fprintf(stderr, "Error in set(): Index %d is out of bounds for list of size %d.\n", index, x);
     va_end(args);
 }
 
@@ -372,23 +436,35 @@ void set(List this, int index, ...){
  * @param index The zero-based index of the element to delete.
  */
 void delete(List this, int index){
-    if (index == 0) {
-        void* v = this->pop(this);
-        if (this->type != T) free(v);
+    if (this == NULL) {
+        fprintf(stderr, "Error in delete(): The provided list instance is NULL.\n");
         return;
     }
-    Node current = this->head;
+    if (index < 0) {
+        fprintf(stderr, "Error in delete(): Index %d is negative and invalid.\n", index);
+        return;
+    }
+
+    if (index == 0) {
+        void* v = this->pop(this);
+        if (this->_type != T) free(v);
+        return;
+    }
+    Node current = this->_head;
     int x = 0;
     while (current != NULL){
         if (index - 1 == x && index != 0){
-            Node temp = current->nextNode;
-            current->nextNode = temp->nextNode;
-            if(this->type != T) free(temp->val);
+            if (current->_nextNode == NULL) break; // Index is out of bounds
+            Node temp = current->_nextNode;
+            current->_nextNode = temp->_nextNode;
+            if(this->_type != T) free(temp->_val);
             free(temp);
+            return;
         }
-        current = current->nextNode;
+        current = current->_nextNode;
         x++;
     }
+    fprintf(stderr, "Error in delete(): Index %d is out of bounds for list of size %d.\n", index, x);
 }
 
 /**
@@ -399,20 +475,22 @@ void delete(List this, int index){
  * @private
  */
 void underInsert(List this, int index, Node node){
-    Node current = this->head;
-    int x = 0;
     if (index == 0){
-        this->head = node;
-        node->nextNode = current;
+        node->_nextNode = this->_head;
+        this->_head = node;
         return;
     }
+
+    Node current = this->_head;
+    int x = 0;
     while (current != NULL){
         if (x == index - 1){
-            Node temp = current->nextNode;
-            current->nextNode = node;
-            node->nextNode = temp;
+            Node temp = current->_nextNode;
+            current->_nextNode = node;
+            node->_nextNode = temp;
+            return;
         }
-        current = current->nextNode;
+        current = current->_nextNode;
         x++;
     }
 }
@@ -425,33 +503,44 @@ void underInsert(List this, int index, Node node){
  * @param index The zero-based index at which to insert the new element.
  */
 void insert(List this, int index, ...){
+    if (this == NULL) {
+        fprintf(stderr, "Error in insert(): The provided list instance is NULL.\n");
+        return;
+    }
+
+    int list_len = len(this);
+    if (index < 0 || index > list_len) {
+        fprintf(stderr, "Error in insert(): Index %d is out of bounds. Valid range is 0 to %d.\n", index, list_len);
+        return;
+    }
+
     va_list args;
     va_start(args, index);
 
-    switch (this->type){
+    switch (this->_type){
         case INT:{
             int val = va_arg(args, int);
-            underInsert(this, index, newNode(&val, this->size, this->type));
+            underInsert(this, index, newNode(&val, this->_size, this->_type));
             break;
         }
         case STRING:{
             char *str = va_arg(args, char *);
-            underInsert(this, index, newNode(str, this->size, this->type));
+            underInsert(this, index, newNode(str, this->_size, this->_type));
             break;
         }
         case DOUBLE:{
             double dbl = va_arg(args, double);
-            underInsert(this, index, newNode(&dbl, this->size, this->type));
+            underInsert(this, index, newNode(&dbl, this->_size, this->_type));
             break;
         }
         case FLOAT:{
             float flt = (float)va_arg(args, double);
-            underInsert(this, index, newNode(&flt, this->size, this->type));
+            underInsert(this, index, newNode(&flt, this->_size, this->_type));
             break;
         }
         default:{
             void *unkown = va_arg(args, void *);
-            underInsert(this, index, newNode(unkown, this->size, this->type));
+            underInsert(this, index, newNode(unkown, this->_size, this->_type));
             break;
         }
     }
@@ -471,25 +560,34 @@ void insert(List this, int index, ...){
  * @return A pointer to the value of the removed element, or `NULL` if the index is out of bounds.
  */
 void *pick(List this, int index){
+    if (this == NULL) {
+        fprintf(stderr, "Error in pick(): The provided list instance is NULL.\n");
+        return NULL;
+    }
+    if (index < 0) {
+        fprintf(stderr, "Error in pick(): Index %d is negative and invalid.\n", index);
+        return NULL;
+    }
+
     if(index == 0){
         return this->pop(this);
-    }else if (this->head == NULL){
-        return NULL;
-    }else {
-        Node current = this->head;
-        int x = 0;
-        while (current != NULL){
-            if (x == index - 1 && current->nextNode != NULL){
-                Node temp = current->nextNode;
-                current->nextNode = temp->nextNode;
-                void *n = temp->val;
-                free(temp);
-                return n;
-            }
-            current = current->nextNode;
-            x++;
-        } 
     }
+
+    Node current = this->_head;
+    int x = 0;
+    while (current != NULL){
+        if (x == index - 1 && current->_nextNode != NULL){
+            Node temp = current->_nextNode;
+            current->_nextNode = temp->_nextNode;
+            void *n = temp->_val;
+            free(temp);
+            return n;
+        }
+        current = current->_nextNode;
+        x++;
+    }
+
+    fprintf(stderr, "Error in pick(): Index %d is out of bounds for list of size %d.\n", index, x);
     return NULL;
 }
 
@@ -500,7 +598,23 @@ void *pick(List this, int index){
  * @param function A function pointer that takes a `void*` (the element's data) and returns `void`.
  */
 void foreach(List this, void(*function)(void*)){
-    for(Node current = this->head; current != NULL; current = current->nextNode){
-        function(current->val);
+    if (this == NULL) {
+        fprintf(stderr, "Error in foreach(): The provided list instance is NULL.\n");
+        return;
     }
+    for(Node current = this->_head; current != NULL; current = current->_nextNode){
+        function(current->_val);
+    }
+}
+
+void forIn(List this, void(*function)(void*)){
+    if (this == NULL) {
+        fprintf(stderr, "Error in forIn(): The provided list instance is NULL.\n");
+        return;
+    }
+    TIterator iterator = newIterator(this);
+    while(hasNext(iterator)){
+        function(next(iterator));
+    }
+    iterator->free(iterator);
 }
