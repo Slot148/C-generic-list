@@ -3,6 +3,11 @@
 
 #include "Tlist.h"
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 /**
  * @struct Node
@@ -10,8 +15,17 @@
  * @private
  */
 struct Node{
-    void *val;      /**< Pointer to the data stored in the node. */
-    Node nextNode;  /**< Pointer to the next node in the list. */
+    void *_val;      /**< Pointer to the data stored in the node. */
+    Node _nextNode;  /**< Pointer to the next node in the list. */
+};
+
+struct TIterator{
+    Node _current;
+    List _list;
+    int _index;
+    void* (*next)(struct TIterator*);
+    bool (*hasNext)(struct TIterator*);
+    void (*free)(struct TIterator*);
 };
 
 /**
@@ -66,5 +80,7 @@ void insert(List this, int index, ...);
 void *pick(List this, int index);
 /** @private */
 void foreach(List this, void(*function)(void*));
+void* next(TIterator iterator);
+bool hasNext(TIterator iterator);
 
 #endif

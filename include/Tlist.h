@@ -1,7 +1,7 @@
 #ifndef T_LIST
 #define T_LIST
 
-#include <stddef.h>
+
 
 /**
  * @enum Type
@@ -25,6 +25,8 @@ typedef struct Lista *List;
  */
 typedef struct Node *Node;
 
+typedef struct TIterator* TIterator;
+
 /**
  * @struct Lista
  * @brief Represents a generic singly linked list.
@@ -35,9 +37,9 @@ typedef struct Node *Node;
  */
 struct Lista{
     /* List state */
-    Node head;      /**< Pointer to the first node in the list. */
-    Type type;      /**< The data type of the elements stored in the list. */
-    size_t size;    /**< The size in bytes of the data type stored (for value types). */
+    Node _head;      /**< Pointer to the first node in the list. */
+    Type _type;      /**< The data type of the elements stored in the list. */
+    size_t _size;    /**< The size in bytes of the data type stored (for value types). */
 
     /* Methods */
     /** @brief Adds an element to the end of the list. */
@@ -85,5 +87,7 @@ List newList(Type type);
  */
 void test();
 
+
+TIterator newIterator(List list);
 
 #endif
