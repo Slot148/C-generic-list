@@ -19,13 +19,18 @@ struct Node{
     Node _nextNode;  /**< Pointer to the next node in the list. */
 };
 
+/**
+ * @struct TIterator
+ * @brief Represents an iterator for a `List`.
+ * @private
+ */
 struct TIterator{
-    Node _current;
-    List _list;
-    int _index;
-    void* (*next)(struct TIterator*);
-    bool (*hasNext)(struct TIterator*);
-    void (*free)(struct TIterator*);
+    Node _current;                          /**< Pointer to the current node in the iteration. */
+    List _list;                             /**< Pointer to the list being iterated. */
+    int _index;                             /**< The index of the current element. */
+    void* (*next)(struct TIterator*);       /**< Method to get the next element. */
+    bool (*hasNext)(struct TIterator*);     /**< Method to check if there is a next element. */
+    void (*free)(struct TIterator*);        /**< Method to free the iterator structure. */
 };
 
 /**
@@ -80,7 +85,23 @@ void insert(List this, int index, ...);
 void *pick(List this, int index);
 /** @private */
 void foreach(List this, void(*function)(void*));
+
+/**
+ * @brief Implementation for the iterator's `next` method. Returns the next element.
+ * @private
+ */
 void* next(TIterator iterator);
+
+/**
+ * @brief Implementation for the iterator's `hasNext` method. Checks for more elements.
+ * @private
+ */
 bool hasNext(TIterator iterator);
+
+/**
+ * @brief Implementation for the iterator's `free` method. Frees the iterator.
+ * @private
+ */
+void freeIterator(TIterator iterator);
 
 #endif

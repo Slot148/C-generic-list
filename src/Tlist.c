@@ -612,19 +612,31 @@ void *pick(List this, int index){
  * @param this A pointer to the list.
  * @param function A function pointer that takes a `void*` (the element's data) and returns `void`.
  */
-
 void foreach(List this, void(*function)(void*)){
     if (this == NULL) {
-        fprintf(stderr, "Error in forIn(): The provided list instance is NULL.\n");
+        fprintf(stderr, "Error in foreach(): The provided list instance is NULL.\n");
         return;
     }
-    TIterator iterator = newIterator(this);
-    while(hasNext(iterator)){
-        function(next(iterator));
+    for(Node current = this->_head; current != NULL; current = current->_nextNode){
+        function(current->_val);
     }
-    iterator->free(iterator);
 }
 
+/**
+ * @brief Creates and returns a new list that is a deep copy of the original.
+ *
+ * This function iterates through the original list and adds each element
+ * to a new list. For primitive types (INT, FLOAT, DOUBLE) and STRING,
+ * new copies of the values are created. For type `T`, it copies the pointers,
+ * meaning both lists will point to the same external data.
+ *
+ * The caller is responsible for freeing the returned list using `list->free(list)`
+ * and then `free(list)`.
+ *
+ * @param this A pointer to the list to be duplicated.
+ * @return A new `List` that is a copy of the original, or `NULL` if the
+ *         original list was `NULL`.
+ */
 List duplicate(List this){
     if (this == NULL) {
         fprintf(stderr, "Error in duplicate(): The provided list instance is NULL.\n");

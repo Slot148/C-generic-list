@@ -25,6 +25,9 @@ typedef struct Lista *List;
  */
 typedef struct Node *Node;
 
+/**
+ * @brief Opaque pointer to the iterator structure.
+ */
 typedef struct TIterator* TIterator;
 
 /**
@@ -90,6 +93,16 @@ List newList(Type type);
 void test();
 
 
+/**
+ * @brief Creates a new iterator for the given list.
+ *
+ * The iterator allows sequential access to the elements of the list.
+ * The caller is responsible for freeing the iterator using `iterator->free(iterator)`
+ * when it is no longer needed.
+ *
+ * @param list The list to iterate over.
+ * @return A pointer to the newly created iterator.
+ */
 TIterator newIterator(List list);
 
 #endif
