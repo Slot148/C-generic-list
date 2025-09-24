@@ -38,8 +38,10 @@ typedef struct TIterator* TIterator;
 struct Lista{
     /* List state */
     Node _head;      /**< Pointer to the first node in the list. */
+    Node _tail;      /**< Pointer to the last node in the list. */
     Type _type;      /**< The data type of the elements stored in the list. */
     size_t _size;    /**< The size in bytes of the data type stored (for value types). */
+    int _length;     /**< The number of elements in the list. */
 
     /* Methods */
     /** @brief Adds an element to the end of the list. */

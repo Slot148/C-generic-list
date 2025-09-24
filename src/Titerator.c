@@ -7,6 +7,10 @@ TIterator newIterator(List list){
         fprintf(stderr, "Error in newIterator(): Failed to allocate memory for the new iterator.\n");
         exit(EXIT_FAILURE);
     }
+    if (list == NULL) {
+        fprintf(stderr, "Error in newIterator(): The provided list instance is NULL.\n");
+        exit(EXIT_FAILURE);
+    }
     iterator->_list = list;
     iterator->_current = list->_head;
     iterator->_index = 0;

@@ -68,7 +68,9 @@ List newList(Type type){
         exit(EXIT_FAILURE);
     }
     this->_head = NULL;
+    this->_tail = NULL;
     this->_type = type;
+    this->_length = 0;
 
     // list methods
     this->print = print;
@@ -210,6 +212,8 @@ void destroyList(List this){
         free(temp);
     }
     this->_head = NULL;
+    this->_tail = NULL;
+    this->_length = 0;
 }
 
 /**
@@ -219,16 +223,14 @@ void destroyList(List this){
  * @private
  */
 void underPush(List this, Node node){
-    if (this->_head == NULL){
+    if (this->_head == NULL) {
         this->_head = node;
+        this->_tail = node;
+    } else {
+        this->_tail->_nextNode = node;
+        this->_tail = node;
     }
-    else{
-        Node current = this->_head;
-        while (current->_nextNode != NULL){
-            current = current->_nextNode;
-        }
-        current->_nextNode = node;
-    }
+    this->_length++; 
 }
 
 /**
@@ -287,13 +289,8 @@ void push(List this, ...){
 int len(List this){
     if (this == NULL) {
         fprintf(stderr, "Error in len(): The provided list instance is NULL.\n");
-        return 0;
     }
-    int len = 0;
-    for (Node current = this->_head; current != NULL; current = current->_nextNode){
-        len++;
-    }
-    return len;
+    return this->_length;
 }
 
 /**
@@ -318,6 +315,10 @@ void *pop(List this){
         this->_head = current->_nextNode;
         void *val = current->_val;
         free(current);
+        this->_length--;
+        if (this->_head == NULL) {
+            this->_tail = NULL;
+        }
         return val;
     }
 }
@@ -418,7 +419,7 @@ void set(List this, int index, ...){
                 }
             }
             va_end(args);
-            return; // Value set, exit function
+            return;
         }
         current = current->_nextNode;
         x++;
@@ -446,19 +447,27 @@ void delete(List this, int index){
     }
 
     if (index == 0) {
-        void* v = this->pop(this);
-        if (this->_type != T) free(v);
+        Node temp = this->_head;
+        this->_head = temp->_nextNode;
+        if (this->_head == NULL) this->_tail = NULL;
+        if(this->_type != T) free(temp->_val);
+        free(temp);
+        this->_length--;
         return;
     }
     Node current = this->_head;
     int x = 0;
     while (current != NULL){
         if (index - 1 == x && index != 0){
-            if (current->_nextNode == NULL) break; // Index is out of bounds
+            if (current->_nextNode == NULL) break;
             Node temp = current->_nextNode;
             current->_nextNode = temp->_nextNode;
+            if (temp == this->_tail) {
+                this->_tail = current;
+            }
             if(this->_type != T) free(temp->_val);
             free(temp);
+            this->_length--;
             return;
         }
         current = current->_nextNode;
@@ -478,6 +487,7 @@ void underInsert(List this, int index, Node node){
     if (index == 0){
         node->_nextNode = this->_head;
         this->_head = node;
+        this->_length++;
         return;
     }
 
@@ -488,6 +498,7 @@ void underInsert(List this, int index, Node node){
             Node temp = current->_nextNode;
             current->_nextNode = node;
             node->_nextNode = temp;
+            this->_length++;
             return;
         }
         current = current->_nextNode;
@@ -579,8 +590,12 @@ void *pick(List this, int index){
         if (x == index - 1 && current->_nextNode != NULL){
             Node temp = current->_nextNode;
             current->_nextNode = temp->_nextNode;
+            if (temp == this->_tail) {
+                this->_tail = current;
+            }
             void *n = temp->_val;
             free(temp);
+            this->_length--;
             return n;
         }
         current = current->_nextNode;
@@ -597,17 +612,8 @@ void *pick(List this, int index){
  * @param this A pointer to the list.
  * @param function A function pointer that takes a `void*` (the element's data) and returns `void`.
  */
-void foreach(List this, void(*function)(void*)){
-    if (this == NULL) {
-        fprintf(stderr, "Error in foreach(): The provided list instance is NULL.\n");
-        return;
-    }
-    for(Node current = this->_head; current != NULL; current = current->_nextNode){
-        function(current->_val);
-    }
-}
 
-void forIn(List this, void(*function)(void*)){
+void foreach(List this, void(*function)(void*)){
     if (this == NULL) {
         fprintf(stderr, "Error in forIn(): The provided list instance is NULL.\n");
         return;
@@ -617,4 +623,26 @@ void forIn(List this, void(*function)(void*)){
         function(next(iterator));
     }
     iterator->free(iterator);
+}
+
+List duplicate(List this){
+    if (this == NULL) {
+        fprintf(stderr, "Error in duplicate(): The provided list instance is NULL.\n");
+        return NULL;
+    }
+    List list = newList(this->_type);
+    TIterator iterator = newIterator(this);
+    
+    while(hasNext(iterator)){
+        void* val = next(iterator);
+        switch (this->_type){
+            case INT: push(list, *(int *)val); break;
+            case FLOAT: push(list, *(float *)val); break;
+            case DOUBLE: push(list, *(double *)val); break;
+            case STRING: push(list, (char *)val); break;
+            case T: push(list, val); break;
+        }
+    }
+    iterator->free(iterator);
+    return list;
 }

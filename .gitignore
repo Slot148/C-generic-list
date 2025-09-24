@@ -1,5 +1,4 @@
-docs
-docs/*
+docs/changelog.txt
 build
 build/*
 lib
@@ -12,3 +11,4 @@ test/*
 .vscode/*
 TODO.txt
 bin/*
+LICENSE

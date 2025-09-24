@@ -133,11 +133,11 @@ int main() {
 A documentação completa da API pode ser gerada usando **Doxygen**.
 
 1.  Certifique-se de ter o Doxygen instalado.
-2.  Na raiz do projeto, execute:
+2.  Na pasta `documentation` do projeto, execute:
     ```bash
     doxygen Doxyfile
     ```
-3.  Abra o arquivo `docs/html/index.html` em seu navegador para visualizar a documentação.
+3.  Abra o arquivo `doxygenDocs/html/index.html` em seu navegador para visualizar a documentação.
 
 ## 🤝 Como Contribuir
 
