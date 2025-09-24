@@ -4,8 +4,11 @@ build
 build/*
 lib
 lib/*
+main.c
 test
 test/
 test/*
 .vscode/
 .vscode/*
+TODO.txt
+bin/*
